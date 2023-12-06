@@ -1,9 +1,39 @@
+'use client';
 import Link from 'next/link'
 import MobileMenu from './mobile-menu'
+import { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
+import { Island_Moments } from 'next/font/google';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
+
+  const router = useRouter();
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Check if the user_tracking cookie is set
+    const userTracking = Cookies.get('user_tracking');
+    // const page_visits = Cookies.get('page_visits');
+    // console.log(userTracking);
+    // console.log(page_visits);
+    // Update the state based on the presence of the user_tracking cookie
+    setIsLoggedIn(!!userTracking);
+  }, []);
+
+
+  const handleLogout = () => {
+    Cookies.remove('user_tracking');
+    Cookies.remove('page_visits');
+
+
+    // Redirect the user to the home page or any other desired page
+    router.push('/signin');
+  }
   return (
     <header className="absolute w-full z-30">
+      <></>
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-20">
           {/* Site branding */}
@@ -15,24 +45,41 @@ export default function Header() {
               </svg>
             </Link>
           </div>
-
+          {isLoggedIn}
           {/* Desktop navigation */}
           <nav className="hidden md:flex md:grow">
             {/* Desktop sign in links */}
             <ul className="flex grow justify-end flex-wrap items-center">
               <li>
-                <Link
+                 {!isLoggedIn && <Link
                   href="/signin"
-                  className="font-medium text-purple-600 hover:text-gray-200 px-4 py-3 flex items-center transition duration-150 ease-in-out"
-                >
+                  className="font-medium text-purple-600 hover:text-gray-200 px-4 py-3 flex items-center transition duration-150 ease-in-out">
                   Sign in
-                </Link>
+                </Link>}
               </li>
               <li>
-                <Link href="/signup" className="btn-sm text-white bg-purple-600 hover:bg-purple-700 ml-3">
+                {!isLoggedIn && <Link href="/signup" className="btn-sm text-white bg-purple-600 hover:bg-purple-700 ml-3">
                   Sign up
-                </Link>
+                </Link>}
               </li>
+              <li>
+                {isLoggedIn && 
+                // <div onClick={handleLogout}>
+                <Link href="/user-activity" className="btn-sm text-white bg-purple-600 hover:bg-purple-700 ml-3">
+                  User Activity
+                </Link>
+                // </div>
+              }
+              </li>
+              <li>
+                {isLoggedIn && 
+                <div onClick={handleLogout}>
+                <Link href="/signin" className="btn-sm text-white bg-purple-600 hover:bg-purple-700 ml-3">
+                  Logout
+                </Link>
+                </div>}
+              </li>
+              
             </ul>
           </nav>
 
